@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.1
+
+A third external review examined `checkout-guard.js` directly rather than just its design, and found three real bypasses plus two real gaps. All five were verified independently before fixing — three against a throwaway git repository, two against Claude Code's own hook/subagent-naming documentation.
+
+**Verified and fixed:**
+- **Untracked-file bypass**: `git diff` never reports untracked files, by design — a brand-new `CLAUDE.local.md` that was never `git add`ed was invisible to the v0.2.0 guard. Reproduced (`git status --porcelain` showed `?? CLAUDE.local.md`; the guard's exact `git diff` command returned nothing). Fixed by adding `git ls-files --others --exclude-standard` alongside the diff and unioning both result sets.
+- **Nested-file bypass**: the v0.2.0 pathspecs (`CLAUDE.md`, `.claude`, etc.) are literal, non-recursive matches — a committed `src/module/CLAUDE.md` was invisible. Reproduced directly. Fixed with top-anchored recursive glob pathspecs (`:(top,glob)**/CLAUDE.md`, etc.).
+- **Subdirectory-cwd bypass**: relative pathspecs resolved against whatever directory Claude Code happened to be started in, not the repo root — running from a subdirectory made even a root-level `CLAUDE.md` tamper invisible. Reproduced directly. Fixed by resolving `git rev-parse --show-toplevel` first and running every git operation against that root.
+- **Install-mode gap**: confirmed against Claude Code's own hooks documentation that `hooks/hooks.json` is only auto-discovered as part of a plugin install — copying this repo into a project's `.claude/` directory (the README's other supported install path) does not activate the hook; project hooks are configured through `.claude/settings.json` instead. Also confirmed against the subagents documentation that project-local custom agents are identified by their bare frontmatter `name`, never a `plugin:` prefix (namespacing is plugin-only) — the agent-matching logic was broadened to recognize both forms, though it's moot without the hook being wired in. `TRUST_MODEL.md` and `README.md` now say plainly that the technical layer is plugin-install-only.
+- **Fail-open evaluation failures**: once the hook has confirmed a call is a review-council specialist dispatch, every subsequent failure to positively verify safety (missing `cwd`, unresolvable repo root, unresolvable trusted ref, a failing git command) now denies instead of silently allowing. Fail-open is reserved for calls the hook has no basis to recognize as ours at all (unparseable input, or a genuinely unrelated agent/tool) — broadening the deny scope to those would mean one plugin's hook blocking unrelated work across an entire session, a different and much larger blast radius than intended.
+
+**Testing**: expanded from 6 to 11 scenarios against a throwaway repository (clean checkout, tracked root change, untracked root file, committed nested file, untracked nested file, `.claude/rules` change, invocation from a subdirectory, unrelated agent, unrelated tool, unresolvable trusted ref, deliberate bypass) — all passing. The 12th scenario from the reviewer's own proposed suite (live end-to-end dispatch denial inside a running Claude Code session) remains unverified for the same structural reason noted since v0.1.1: this session's tool registry can't hot-load a plugin installed mid-conversation.
+
 ## 0.2.0
 
 Closes the gap v0.1.2 disclosed but didn't fix: the step-2 checkout-safety check in `SKILL.md` is a behavioral instruction, evaluated by the same orchestrator session that may already have an untrusted branch's `CLAUDE.md` loaded into it. Added a real technical enforcement layer that doesn't have that problem.

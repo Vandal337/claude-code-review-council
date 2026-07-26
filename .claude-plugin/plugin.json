@@ -1,7 +1,7 @@
 {
   "name": "review-council",
   "description": "Six-specialist code review orchestrator (correctness, security, policy/trust-boundary, test-evidence, architecture, interface) for a working tree or pull request diff",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Vandal337",
     "url": "https://github.com/Vandal337"
