@@ -18,12 +18,15 @@ A single reviewer prompt has to hold correctness, security, architecture, and pr
 
 ## Install
 
-As a plugin, from this repo (once pushed to GitHub):
+As a plugin, from this repo:
 
 ```
 /plugin marketplace add Vandal337/claude-code-review-council
-/plugin install review-council
+/plugin install review-council@review-council-marketplace
+/reload-plugins
 ```
+
+The unqualified `/plugin install review-council` also works (Claude Code accepts a bare plugin name or a `name@marketplace` pair) — the qualified form above is just unambiguous if you ever have another marketplace with a same-named plugin installed too. `/reload-plugins` picks up the newly installed agents/skill in a session that was already running when you installed; skip it if you're starting a fresh session.
 
 Or copy the contents of this repo into a project's `.claude/` directory to use it without installing as a plugin.
 
@@ -49,12 +52,13 @@ With no arguments, scope defaults to `working-tree`.
 ## Design notes
 
 - The orchestrator runs inline in the main conversation (not as a subagent), so it can dispatch the six specialists as first-level `Agent` calls without nested-spawn restrictions.
-- GitHub commenting (`--post-comment`) always goes through the normal tool-permission prompt — the skill never grants itself standing authorization to post.
+- GitHub commenting (`--post-comment`) always goes through the normal tool-permission prompt — the skill never grants itself standing authorization to post (this used to be contradicted by an overly-broad `allowed-tools` grant; fixed in v0.1.1).
 - Large untracked working trees are never silently trimmed; if `--tracked-only` isn't passed and there's a large untracked set, the skill reports the count and asks rather than quietly reducing scope.
+- **Checkout-safety precondition**: Claude Code auto-injects the current checkout's `CLAUDE.md`/`AGENTS.md` hierarchy into every custom subagent's context, with no per-agent opt-out. Before dispatching any specialist, the orchestrator diffs governance files (`CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `.claude/`, `.github/workflows/`) between the current checkout and the resolved base revision; if they differ, it refuses to dispatch and reports `REVIEW_BLOCKED` instead of letting a malicious branch's edited policy file reach every specialist as if it were trusted instruction context. See `skills/review-council/TRUST_MODEL.md` and `SKILL.md` step 2.
 
 ## Before you rely on this in your own repo
 
-The manifests parse and the YAML frontmatter is valid, but this package has not yet been run through a full adversarial pressure-test pass (deliberately trying to get a specialist to violate the trust boundary, misclassify severity, or over-report duplicates) — see `superpowers:writing-skills` methodology if you want to extend this. Treat v0.1.0 as a solid structural starting point, not a battle-tested one. Run it against a real PR in a low-stakes repo first and read its output critically before trusting it on anything sensitive.
+The manifests parse and the YAML frontmatter is valid, `claude plugin validate --strict` passes, and this repository has itself been reviewed by its own specialist prompts (see `CHANGELOG.md`) — but it still has not been run through a full adversarial pressure-test pass (deliberately trying to get a specialist to violate the trust boundary, misclassify severity, or over-report duplicates) — see `superpowers:writing-skills` methodology if you want to extend this. Treat v0.1.1 as a solid, self-reviewed starting point, not a battle-tested one. Run it against a real PR in a low-stakes repo first and read its output critically before trusting it on anything sensitive.
 
 ## License
 
