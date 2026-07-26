@@ -15,7 +15,6 @@ allowed-tools:
   - Bash(git merge-base:*)
   - Bash(gh pr view:*)
   - Bash(gh pr diff:*)
-  - Bash(gh pr comment:*)
   - Agent(review-council:correctness-reviewer, review-council:security-reviewer, review-council:policy-boundary-reviewer, review-council:test-evidence-reviewer, review-council:architecture-reviewer, review-council:interface-reviewer)
 ---
 
@@ -74,7 +73,7 @@ Use `git diff --name-only`, `git status`, or `gh pr diff`/`gh pr view` depending
 Launch all six specialist agents in a single batch (not sequentially) via `Agent(review-council:<name>)`. Give each:
 - the resolved scope (file list or diff)
 - the base revision to read policy from
-- an instruction to read `TRUST_MODEL.md`, `SEVERITY_MODEL.md`, and `FALSE_POSITIVE_RULES.md` in this skill directory first
+- an instruction to read `TRUST_MODEL.md`, `SEVERITY_MODEL.md`, `FALSE_POSITIVE_RULES.md`, and `OUTPUT_SCHEMA.md` in this skill directory first
 
 ## 5. Aggregate
 
