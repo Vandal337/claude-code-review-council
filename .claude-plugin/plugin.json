@@ -1,0 +1,17 @@
+{
+  "name": "review-council",
+  "description": "Six-specialist code review orchestrator (correctness, security, policy/trust-boundary, test-evidence, architecture, interface) for a working tree or pull request diff",
+  "version": "0.1.0",
+  "author": {
+    "name": "Your Name",
+    "url": "https://github.com/your-handle"
+  },
+  "homepage": "https://github.com/your-handle/claude-code-review-council",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "security-review",
+    "multi-agent",
+    "pull-request"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "review-council-marketplace",
+  "owner": {
+    "name": "Your Name",
+    "url": "https://github.com/your-handle"
+  },
+  "metadata": {
+    "description": "Marketplace for the Review Council code review plugin",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "review-council",
+      "source": "./",
+      "description": "Six-specialist code review orchestrator (correctness, security, policy/trust-boundary, test-evidence, architecture, interface) for a working tree or pull request diff",
+      "version": "0.1.0"
+    }
+  ]
+}
