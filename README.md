@@ -21,7 +21,7 @@ A single reviewer prompt has to hold correctness, security, architecture, and pr
 As a plugin, from this repo (once pushed to GitHub):
 
 ```
-/plugin marketplace add your-handle/claude-code-review-council
+/plugin marketplace add Vandal337/claude-code-review-council
 /plugin install review-council
 ```
 
