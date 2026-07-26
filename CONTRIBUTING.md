@@ -14,7 +14,9 @@ This plugin is intentionally generic — it should work against any repository's
 
 ## Testing changes
 
-There's no automated eval suite in v0.1.0. Before opening a PR:
+**If you're changing `scripts/checkout-guard.js`**: run `node --test tests/checkout-guard.test.js` and confirm all scenarios still pass before opening a PR. It builds throwaway git repositories and exercises the real script as a child process (not a reimplementation of its logic) — no external test framework, no network access, no dependency install needed. Add a new test case for any bypass or behavior change you're fixing or introducing; don't just describe it in the PR.
+
+There's no automated eval suite for the specialist agents themselves yet. Before opening a PR that touches `SKILL.md`, an agent file, or a reference doc:
 
 1. Run `claude plugin validate . --strict` and confirm it passes.
 2. Load the plugin locally (`claude --plugin-dir .`) and run `/review-council:review-council working-tree` against a repo with a small, known set of issues.

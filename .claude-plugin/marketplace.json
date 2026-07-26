@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Marketplace for the Review Council code review plugin",
-    "version": "0.2.1"
+    "version": "0.2.2"
   },
   "plugins": [
     {

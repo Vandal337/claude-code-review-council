@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+A fourth review confirmed all three v0.2.0 bypasses were closed correctly against the actual `9bc53c1` commit (not a cached/stale view — checked directly, per the earlier lesson about not trusting an external fetch path over live verification) and made one further recommendation: commit an automated regression harness rather than leave the 11 scenarios as changelog prose only.
+
+- **New**: `tests/checkout-guard.test.js`, using Node's built-in `node:test` runner (no new dependency). Builds a throwaway git repository per test and runs the actual `scripts/checkout-guard.js` as a child process with simulated `PreToolUse` stdin — not a reimplementation of its logic, the real script. Covers all 11 previously-manual scenarios plus one addition (a bare, unprefixed agent name — the project-local install case — still gets recognized and denied correctly). `node --test tests/checkout-guard.test.js`: 12/12 passing.
+- `CONTRIBUTING.md` and `README.md` updated to point at the suite; contributors changing the guard are now expected to run it and add a case for whatever they're fixing, not just describe it.
+- **Not done, and not something this repository's own history can produce**: proving the hook fires inside a live, running Claude Code session. Every version since v0.1.1 has disclosed this same limitation for the same reason — this conversation's tool/plugin registry is fixed at session start and can't hot-load a plugin installed mid-session, so nothing short of a genuinely fresh session can close it. Noted directly in `README.md`'s testing section as the one remaining gap, with an invitation for whoever first exercises it for real to report back.
+
 ## 0.2.1
 
 A third external review examined `checkout-guard.js` directly rather than just its design, and found three real bypasses plus two real gaps. All five were verified independently before fixing — three against a throwaway git repository, two against Claude Code's own hook/subagent-naming documentation.
