@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+A second external review made two claims about v0.1.1. One was checked directly against the live GitHub repository and found false (every item it claimed was missing — the working-tree redefinition, `REVIEW_BLOCKED`, the severity fix, the verdict enum, the CI-assumption fix, both manifest versions — was already live at that commit; the review appears to have been working from stale or cached content). No code changed as a result of that claim.
+
+The second claim was verified and is correct: v0.1.1's `TRUST_MODEL.md` and `SKILL.md` described the step-2 checkout-safety check as a "hard precondition." That overclaims what it is. The check is a behavioral instruction evaluated by the same orchestrator session that Claude Code loads the current checkout's `CLAUDE.md` into at session start — not an out-of-band technical gate. In the one case where it matters (an untrusted branch already checked out *before* the skill is invoked), the orchestrator's context may already be influenced before the check ever runs. Reworded `TRUST_MODEL.md`, `SKILL.md`, and `README.md` to state this precisely: the check closes the gap for the six specialists and for the orchestrator whenever the recommended workflow (review from a trusted checkout, fetch reviewed content remotely) is followed, but is not an independent enforcement layer. Noted a Claude Code hook — a deterministic script gating the `Agent` tool call itself — as the way to close the remaining gap technically; not implemented in this version.
+
 ## 0.1.1
 
 Two rounds of fixes land in this version together — neither shipped as its own bumped version at the time, so both are recorded here rather than implied to have shipped under 0.1.0.
