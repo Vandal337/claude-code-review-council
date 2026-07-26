@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3
+
+A fifth review confirmed `tests/checkout-guard.test.js` and its 12 scenarios exist as committed (it could not re-execute the suite in its own environment, so the passing result stays grounded in this repository's own run, not an independent one) and made two small, correct points:
+
+- **Verified before relaying**: the review's claim that testing via `/review-council:review-council` could prove the wrong layer — `SKILL.md` step 2's own behavioral check might block a tampered checkout before an `Agent` call is ever attempted, which would demonstrate the prompt-level guard, not the hook. Checked this against Claude Code's subagent docs: an explicit `@`-mention "guarantees the subagent runs for one task" and still routes through the same `Agent` tool call (the mention just pre-selects which subagent, not a different code path) — meaning it correctly isolates the hook from the skill's own check. `README.md`'s live-test guidance now recommends `@`-mentioning a specialist directly, for exactly this reason.
+- **Fixed**: `README.md`'s "Before you rely on this" section named a specific version number ("Treat v0.2.1 as...") in a sentence describing the current release — guaranteed to go stale every time this file bumps again, which by this point in the changelog is clearly often. Switched to version-neutral wording. Checked every other version reference in the repo first; the rest are already correctly framed as historical ("fixed in v0.1.1", "v0.2.0 missed this") and don't have this problem.
+
 ## 0.2.2
 
 A fourth review confirmed all three v0.2.0 bypasses were closed correctly against the actual `9bc53c1` commit (not a cached/stale view — checked directly, per the earlier lesson about not trusting an external fetch path over live verification) and made one further recommendation: commit an automated regression harness rather than leave the 11 scenarios as changelog prose only.
