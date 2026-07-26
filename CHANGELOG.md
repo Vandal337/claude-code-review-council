@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0
+
+Closes the gap v0.1.2 disclosed but didn't fix: the step-2 checkout-safety check in `SKILL.md` is a behavioral instruction, evaluated by the same orchestrator session that may already have an untrusted branch's `CLAUDE.md` loaded into it. Added a real technical enforcement layer that doesn't have that problem.
+
+- **New**: `hooks/hooks.json` registers `scripts/checkout-guard.js` as a `PreToolUse` hook matched on the `Agent` tool. As a separate OS process invoked by Claude Code itself, it has no channel back into the orchestrator's conversation context — a compromised orchestrator can't influence a decision it never gets to make.
+- The hook does not trust anything the orchestrator resolved as "the base revision" — that would defeat the point. It independently derives its own trusted reference (`origin/HEAD`, falling back to `origin/main` then `origin/master`) and denies dispatch of any `review-council:*` specialist if governance files (`CLAUDE.md`, `CLAUDE.local.md`, `AGENTS.md`, `.claude/`, `.github/workflows/`) differ — committed or uncommitted — from that ref.
+- Fails open (with a clear stderr message) if no trusted ref can be resolved at all, rather than silently blocking on a repo shape it has no basis to judge. `SKILL.md` step 2 remains the only guard in that case.
+- Escape hatch: `REVIEW_COUNCIL_ALLOW_UNTRUSTED_CHECKOUT=1` bypasses the hook, for a repository's own maintainers legitimately evolving `CLAUDE.md` on a feature branch. Requires a human to set an environment variable outside the conversation — reviewed content has no path to setting it.
+- Written in Node.js and invoked via exec form (`"command": "node", "args": [...]`) rather than a shell script, per Claude Code's own cross-platform guidance for hook commands.
+- **Tested**: the script's own logic — allow/deny/bypass/uncommitted-change paths — was verified directly against a throwaway git repository with simulated stdin JSON matching the documented hook schema. **Not verified**: the hook actually firing inside a live Claude Code session end-to-end (this session's tool registry can't hot-load a plugin installed mid-conversation, the same limitation noted for the specialist agents in earlier versions).
+- `TRUST_MODEL.md` and `SKILL.md` updated to describe both enforcement layers precisely — what each one covers and what it doesn't.
+
 ## 0.1.2
 
 A second external review made two claims about v0.1.1. One was checked directly against the live GitHub repository and found false (every item it claimed was missing — the working-tree redefinition, `REVIEW_BLOCKED`, the severity fix, the verdict enum, the CI-assumption fix, both manifest versions — was already live at that commit; the review appears to have been working from stale or cached content). No code changed as a result of that claim.
