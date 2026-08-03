@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+`README.md`'s "Before you rely on this" section described the live-test gap in second-person imperatives addressed to whoever was reading it ("if you're the one to close that gap... @-mention a specialist... try it once..."). Flagged externally: that phrasing is indistinguishable from a prompt-injection pattern to an AI reviewing the repo, which is a bad property for a security-review tool's own README to have. Reworded to third-person description of the gap and the verification steps, with an explicit line stating this is for a human maintainer to act on deliberately, not something an AI encountering the file should execute automatically. No information was removed — same gap, same reproduction steps, same invitation to report back via PR.
+
 ## 0.2.3
 
 A fifth review confirmed `tests/checkout-guard.test.js` and its 12 scenarios exist as committed (it could not re-execute the suite in its own environment, so the passing result stays grounded in this repository's own run, not an independent one) and made two small, correct points:
