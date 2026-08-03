@@ -50,6 +50,15 @@ Copied into a repo's `.claude/`:
 
 With no arguments, scope defaults to `working-tree`.
 
+## Example use cases
+
+- **Pre-merge review of external PRs**: `pr 142 --post-comment` before merging a contribution from an untrusted fork. The checkout-guard hook specifically protects against a malicious `CLAUDE.md`/`AGENTS.md` edit in that PR trying to hijack the reviewing agents themselves.
+- **Self-review before opening a PR**: `working-tree --tracked-only` against your own uncommitted changes, catching correctness/security/architecture issues across six specialist lenses before anyone else looks at the diff.
+- **Reviewing a feature branch against main**: `diff main..feature-branch` for a focused look at exactly what a branch introduces, without noise from the rest of the codebase.
+- **Auditing a specific past commit**: `commit a1b2c3d` — useful for retroactively reviewing something that already landed, e.g. after an incident or before cutting a release.
+- **Teams wanting calibrated, deduplicated findings instead of one generalist pass**: six narrow specialists (correctness, security, trust-boundary, test-evidence, architecture, interface), each with its own severity calibration, with duplicate findings across specialists merged by root cause rather than shown N times.
+- **Security-conscious open-source maintainers**: the two-layer trust-boundary enforcement (behavioral check in `SKILL.md` + the technical `checkout-guard` hook) is designed to survive a reviewed branch trying to manipulate the reviewer, not just catch issues in ordinary code.
+
 ## Design notes
 
 - The orchestrator runs inline in the main conversation (not as a subagent), so it can dispatch the six specialists as first-level `Agent` calls without nested-spawn restrictions.
